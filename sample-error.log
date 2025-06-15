@@ -1,0 +1,12 @@
+[2024-06-14 12:00:00] ERROR: Database connection failed: Connection timeout after 30s
+[2024-06-14 12:00:05] ERROR: Failed to process user request: User not found (UserID: 12345)
+[2024-06-14 12:00:10] WARN: High memory usage detected: 85% of available memory in use
+[2024-06-14 12:00:15] ERROR: API endpoint /api/users/12345 returned 500 Internal Server Error
+[2024-06-14 12:00:20] ERROR: Database connection pool exhausted: 0 connections available
+[2024-06-14 12:00:25] INFO: Attempting database reconnection...
+[2024-06-14 12:00:30] ERROR: Database reconnection failed: Connection refused
+[2024-06-14 12:00:35] WARN: Circuit breaker opened for database connections
+[2024-06-14 12:00:40] ERROR: Service degraded: Unable to process user requests
+[2024-06-14 12:00:45] INFO: Failover initiated to backup database
+[2024-06-14 12:00:50] INFO: Backup database connection established
+[2024-06-14 12:00:55] INFO: Service restored: Processing user requests resumed

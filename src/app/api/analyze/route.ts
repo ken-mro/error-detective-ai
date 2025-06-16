@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     if (logs && logs.length > 0) {
       // In a real implementation, you'd read the actual log files
       // For now, we'll simulate this
-      parsedLogs = await logParser.parseLogFiles(logs)
+      parsedLogs = await logParser.parseLogFiles()
     }
 
     // Perform analysis

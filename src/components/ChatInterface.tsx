@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
-import { Upload, Send, FileText, Settings, Brain, Code, TestTube } from 'lucide-react'
+import { FileText, Settings, Brain } from 'lucide-react'
 import { FileUpload } from './FileUpload'
 import { MessageList } from './MessageList'
 import { MessageInput } from './MessageInput'

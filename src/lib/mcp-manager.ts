@@ -1,12 +1,33 @@
 import { MCPServer } from '@/types'
 
+interface CodeSearchResult {
+  path: string
+  content: string
+  repository?: string
+  line?: number
+}
+
+interface RepositoryInfo {
+  name: string
+  url: string
+  description?: string
+  language?: string
+}
+
+interface MCPClientConfig {
+  token?: string
+  baseUrl?: string
+  indexPath?: string
+  languages?: string[]
+}
+
 interface MCPClient {
   connect(): Promise<void>
   disconnect(): Promise<void>
   listFiles(path?: string): Promise<string[]>
   readFile(path: string): Promise<string>
-  searchCode(query: string): Promise<any[]>
-  getRepositoryInfo(): Promise<any>
+  searchCode(query: string): Promise<CodeSearchResult[]>
+  getRepositoryInfo(): Promise<RepositoryInfo>
 }
 
 export class MCPManager {
@@ -106,8 +127,8 @@ export class MCPManager {
     }
   }
 
-  async searchCode(query: string, serverId?: string): Promise<any[]> {
-    const results: any[] = []
+  async searchCode(query: string, serverId?: string): Promise<CodeSearchResult[]> {
+    const results: CodeSearchResult[] = []
     
     if (serverId) {
       const client = this.clients.get(serverId)
@@ -159,10 +180,10 @@ export class MCPManager {
 
 // GitHub MCP Client Implementation
 class GitHubMCPClient implements MCPClient {
-  private config: any
+  private config: MCPClientConfig
   private baseUrl: string
 
-  constructor(config: any) {
+  constructor(config: MCPClientConfig) {
     this.config = config
     this.baseUrl = config.baseUrl || 'https://api.github.com'
   }
@@ -187,15 +208,17 @@ class GitHubMCPClient implements MCPClient {
 
   async listFiles(path = ''): Promise<string[]> {
     // This would implement GitHub repository file listing
+    console.log('GitHub listFiles not implemented for path:', path);
     return []
   }
 
   async readFile(path: string): Promise<string> {
     // This would implement GitHub file reading
+    console.log('GitHub readFile not implemented for path:', path);
     return ''
   }
 
-  async searchCode(query: string): Promise<any[]> {
+  async searchCode(query: string): Promise<CodeSearchResult[]> {
     const response = await fetch(`${this.baseUrl}/search/code?q=${encodeURIComponent(query)}`, {
       headers: {
         'Authorization': `token ${this.config.token}`,
@@ -208,21 +231,36 @@ class GitHubMCPClient implements MCPClient {
     }
 
     const data = await response.json()
-    return data.items || []
+    return (data.items || []).map((item: {
+      path: string
+      text_matches?: Array<{
+        fragment?: string
+        matches?: Array<{ indices?: number[] }>
+      }>
+      repository?: { full_name: string }
+    }) => ({
+      path: item.path,
+      content: item.text_matches?.[0]?.fragment || '',
+      repository: item.repository?.full_name,
+      line: item.text_matches?.[0]?.matches?.[0]?.indices?.[0]
+    }))
   }
 
-  async getRepositoryInfo(): Promise<any> {
+  async getRepositoryInfo(): Promise<RepositoryInfo> {
     // Implementation for getting repository information
-    return {}
+    return {
+      name: 'GitHub Repository',
+      url: this.baseUrl
+    }
   }
 }
 
 // GitLab MCP Client Implementation
 class GitLabMCPClient implements MCPClient {
-  private config: any
+  private config: MCPClientConfig
   private baseUrl: string
 
-  constructor(config: any) {
+  constructor(config: MCPClientConfig) {
     this.config = config
     this.baseUrl = config.baseUrl || 'https://gitlab.com/api/v4'
   }
@@ -244,28 +282,34 @@ class GitLabMCPClient implements MCPClient {
   }
 
   async listFiles(path = ''): Promise<string[]> {
+    console.log('GitLab listFiles not implemented for path:', path);
     return []
   }
 
   async readFile(path: string): Promise<string> {
+    console.log('GitLab readFile not implemented for path:', path);
     return ''
   }
 
-  async searchCode(query: string): Promise<any[]> {
+  async searchCode(query: string): Promise<CodeSearchResult[]> {
     // Implementation for GitLab code search
+    console.log('GitLab searchCode not implemented for query:', query);
     return []
   }
 
-  async getRepositoryInfo(): Promise<any> {
-    return {}
+  async getRepositoryInfo(): Promise<RepositoryInfo> {
+    return {
+      name: 'GitLab Repository',
+      url: this.baseUrl
+    }
   }
 }
 
 // Code Index MCP Client Implementation
 class CodeIndexMCPClient implements MCPClient {
-  private config: any
+  private config: MCPClientConfig
 
-  constructor(config: any) {
+  constructor(config: MCPClientConfig) {
     this.config = config
   }
 
@@ -278,19 +322,25 @@ class CodeIndexMCPClient implements MCPClient {
   }
 
   async listFiles(path = ''): Promise<string[]> {
+    console.log('CodeIndex listFiles not implemented for path:', path);
     return []
   }
 
   async readFile(path: string): Promise<string> {
+    console.log('CodeIndex readFile not implemented for path:', path);
     return ''
   }
 
-  async searchCode(query: string): Promise<any[]> {
+  async searchCode(query: string): Promise<CodeSearchResult[]> {
     // Implementation for local code index search
+    console.log('CodeIndex searchCode not implemented for query:', query);
     return []
   }
 
-  async getRepositoryInfo(): Promise<any> {
-    return {}
+  async getRepositoryInfo(): Promise<RepositoryInfo> {
+    return {
+      name: 'Code Index',
+      url: this.config.indexPath || '/tmp/code-index'
+    }
   }
 }

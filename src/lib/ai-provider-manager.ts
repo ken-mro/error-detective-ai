@@ -1,6 +1,6 @@
 import { AIProvider } from '@/types'
-import { openai } from '@ai-sdk/openai'
-import { anthropic } from '@ai-sdk/anthropic'
+import { createOpenAI } from '@ai-sdk/openai'
+import { createAnthropic } from '@ai-sdk/anthropic'
 import { vertex } from '@ai-sdk/google-vertex'
 import { bedrock } from '@ai-sdk/amazon-bedrock'
 import { generateText, streamText } from 'ai'
@@ -17,21 +17,19 @@ export class AIProviderManager {
   private getModel() {
     switch (this.provider) {
       case 'openai':
-        return openai('gpt-4', {
+        const openaiClient = createOpenAI({
           apiKey: this.apiKey
         })
+        return openaiClient('gpt-4')
       case 'anthropic':
-        return anthropic('claude-3-5-sonnet-20241022', {
+        const anthropicClient = createAnthropic({
           apiKey: this.apiKey
         })
+        return anthropicClient('claude-3-5-sonnet-20241022')
       case 'vertex':
-        return vertex('gemini-1.5-pro', {
-          // Vertex AI configuration would go here
-        })
+        return vertex('gemini-1.5-pro')
       case 'bedrock':
-        return bedrock('anthropic.claude-3-sonnet-20240229-v1:0', {
-          // Bedrock configuration would go here
-        })
+        return bedrock('anthropic.claude-3-sonnet-20240229-v1:0')
       default:
         throw new Error(`Unsupported AI provider: ${this.provider}`)
     }

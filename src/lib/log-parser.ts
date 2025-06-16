@@ -1,7 +1,7 @@
 import { LogEntry, ParsedLog } from '@/types'
 
 export class LogParser {
-  async parseLogFiles(logFileNames: string[]): Promise<ParsedLog> {
+  async parseLogFiles(): Promise<ParsedLog> {
     // In a real implementation, you would read the actual files
     // For now, we'll simulate parsing with sample data
     const entries: LogEntry[] = []
@@ -63,10 +63,10 @@ export class LogParser {
       try {
         const result = format(line)
         if (result) return result
-      } catch (error) {
+      } catch {
         // Continue to next format
       }
-    }
+   }
 
     return null
   }
